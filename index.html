@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>EPS8266 HTTP Client Example</title>
+</head>
+
+<body>
+    <h1>EPS8266 HTTP Client Example</h1>
+    <p id="status"></p>
+    <button onclick="getData()">Get Data</button>
+    <script>
+        function getData() {
+            const url = "http://192.168.1.107/"; //เปลี่ยน url ตามที่ต้องการ
+            const http = new XMLHttpRequest();
+            http.open("GET", url);
+            http.send();
+            http.onreadystatechange = function () {
+                if (http.readyState === 4 && http.status === 200) {
+                    const response = JSON.parse(http.responseText);
+                    const second = response.second;
+                    const update = response.update;
+                    let total = 0;
+                    let prev_update = "";
+                    if (second > 0) {
+                        total = second;
+                        prev_update = update;
+                        document.getElementById("status").innerHTML =
+                            "Started at " + prev_update + ". Total: " + total;
+                    } else {
+                        document.getElementById("status").innerHTML = "Stop Paying!";
+                    }
+                } else {
+                    document.getElementById("status").innerHTML = "Error Occurred";
+                }
+            };
+        }
+    </script>
+</body>
+
+</html>

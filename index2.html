@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>ESP8266 Control Panel</title>
+</head>
+
+<body>
+    <h1>ESP8266 Control Panel</h1>
+    <div id="status"></div>
+    <button onclick="start()">Start</button>
+    <button onclick="stop()">Stop</button>
+    <script>
+        // IP address of ESP8266
+        const ipAddress = "192.168.1.107";
+
+        // function to send GET request to ESP8266 and handle response
+        function getData() {
+            fetch(`http://${ipAddress}/getData`)
+                .then(response => response.json())
+                .then(data => {
+                    const second = data.second;
+                    const update = data.update;
+                    let status = "";
+                    let total = 0;
+                    let prevUpdate = "";
+
+                    if (second > 0) {
+                        total = second;
+                        prevUpdate = update;
+                        status = "Start dispensing power";
+                    } else {
+                        status = "Stop dispensing power";
+                    }
+
+                    document.getElementById("status").innerHTML = status;
+
+                    // If total is 0, stop dispensing power
+                    if (total === 0) {
+                        stop();
+                    }
+                })
+                .catch(error => console.error(error));
+        }
+
+        // function to start loop
+        function start() {
+            setInterval(() => {
+                getData();
+            }, 1000);
+        }
+
+        // function to stop loop
+        function stop() {
+            clearInterval();
+            document.getElementById("status").innerHTML = "Stopped";
+        }
+    </script>
+</body>
+
+</html>
